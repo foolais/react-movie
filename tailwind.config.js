@@ -6,6 +6,7 @@ export default {
       colors: {
         primary: "rgb(245,197,24)",
         secondary: "rgba(18,18,18)",
+        textPrimary: "rgb(100,100,100)",
       },
     },
   },
