@@ -1,29 +1,75 @@
 import { HiMenu, HiOutlineSearch, HiOutlineUser, HiX } from "react-icons/hi";
 import { twMerge } from "tailwind-merge";
 import { useMediaQuery } from "react-responsive";
-import { useState, useRef } from "react";
-import { useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import SideNav from "./SideNav";
+import { getSearchMovie, getGenreList } from "../utils/api";
+import DropDownMovie from "./DropdownMovie";
 
 const Navbar = () => {
   const [isOpenSideNav, setIsOpenSideNav] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [searchData, setSearchData] = useState("");
+  const [listMovies, setListMovies] = useState([]);
+  const [listGenres, setListGenres] = useState([]);
 
   const inputRef = useRef(null);
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
+  // change focus to input when click button searching
   useEffect(() => {
     if (isSearching && inputRef.current) inputRef.current.focus();
   }, [isSearching]);
 
+  // get list Genre movies
+  useEffect(() => {
+    getGenreList().then((datas) => {
+      const { data } = datas;
+      setListGenres(data.genres);
+    });
+  }, []);
+
+  // Mapping list movie when searching
+  useEffect(() => {
+    const baseimgurl = import.meta.env.VITE_BASEIMGURL;
+
+    const fetchMovie = async () => {
+      await getSearchMovie(searchData)
+        .then((datas) => {
+          const { data } = datas;
+          const movies = data.results.map((item) => {
+            const filteredGenre = listGenres.filter((ar) =>
+              item.genre_ids.includes(ar.id),
+            );
+            return {
+              id: item.id,
+              title: item.title,
+              release_year: item.release_date.split("-")[0],
+              poster: `${baseimgurl}${item.poster_path}`,
+              genre: filteredGenre.map((ar) => ar.name),
+            };
+          });
+          setListMovies(movies);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    };
+
+    const timer = setTimeout(() => {
+      if (searchData.length >= 3) fetchMovie();
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, [searchData, listGenres]);
+
   return (
-    <div className="bg-secondary flex h-16 w-screen items-center justify-between p-5">
+    <div className="flex h-16 w-screen items-center justify-between bg-secondary p-5">
       <div className="flex items-center gap-4">
         <div
           onClick={() => setIsOpenSideNav((prev) => !prev)}
           className={twMerge(
-            "text-white cursor-pointer text-3xl",
+            "cursor-pointer text-3xl text-white",
             "md:hidden ",
           )}
         >
@@ -35,7 +81,7 @@ const Navbar = () => {
         {!isMobile && (
           <div
             className={twMerge(
-              "text-white ml-2 flex items-center justify-center gap-3 text-xl font-semibold",
+              "ml-2 flex items-center justify-center gap-3 text-xl font-semibold text-white",
               "lg:gap-4 lg:tracking-wider",
             )}
           >
@@ -53,19 +99,22 @@ const Navbar = () => {
             onChange={(e) => setSearchData(e.target.value)}
             placeholder="Search Movie Here...."
             className={twMerge(
-              "bg-secondary text-white h-16 w-full p-3 ",
-              "placeholder:text-textPrimary pr-10 placeholder:font-bold focus:outline-none",
+              "h-16 w-full bg-secondary p-3 text-white ",
+              "placeholder:text-tertiary pr-10 placeholder:font-bold focus:outline-none",
             )}
             ref={inputRef}
           />
           <div
-            className="text-white absolute right-5 top-5 rounded-full text-2xl font-semibold"
+            className="absolute right-5 top-5 rounded-full text-2xl font-semibold text-white"
             onClick={() => {
-              setIsSearching((prev) => !prev), setSearchData("");
+              setIsSearching((prev) => !prev),
+                setSearchData(""),
+                setListMovies([]);
             }}
           >
             <HiX className="hover:text-primary" />
           </div>
+          {searchData.length >= 3 && <DropDownMovie listMovies={listMovies} />}
         </div>
       )}
       {/* END searching bar for mobile */}
@@ -75,7 +124,7 @@ const Navbar = () => {
         {isMobile ? (
           // open from mobile size
           <div
-            className="text-white cursor-pointer text-xl"
+            className="cursor-pointer text-xl text-white"
             onClick={() => setIsSearching((prev) => !prev)}
           >
             <HiOutlineSearch className="hover:text-primary" />
@@ -83,14 +132,14 @@ const Navbar = () => {
         ) : (
           // open from above tablet size
           <>
-            <div className="bg-white relative flex w-full items-center rounded-md p-2">
+            <div className="relative flex w-full items-center rounded-md bg-white p-2">
               <input
                 type="text"
                 placeholder="Search Movie Here..."
                 onChange={(e) => setSearchData(e.target.value)}
                 className={twMerge(
                   "outline-none",
-                  "placeholder:text-textPrimary pr-10 placeholder:font-semibold focus:outline-none",
+                  "placeholder:text-tertiary pr-10 placeholder:font-semibold focus:outline-none",
                 )}
                 ref={inputRef}
               />
@@ -100,8 +149,11 @@ const Navbar = () => {
                   onClick={() => setIsSearching((prev) => !prev)}
                 />
               </div>
+              {searchData.length >= 3 && (
+                <DropDownMovie listMovies={listMovies} />
+              )}
             </div>
-            <span className="text-textPrimary text-2xl font-semibold">|</span>
+            <span className="text-tertiary text-2xl font-semibold">|</span>
           </>
         )}
         <div className="rounded-full bg-primary p-3 text-xl font-semibold hover:opacity-80">
