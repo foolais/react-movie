@@ -5,8 +5,8 @@ export default {
     extend: {
       colors: {
         primary: "rgb(245,197,24)",
-        secondary: "rgba(18,18,18)",
-        textPrimary: "rgb(100,100,100)",
+        secondary: "rgb(18,18,18)",
+        tertiary: "rgb(200,200,200)",
       },
     },
   },
