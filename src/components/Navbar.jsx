@@ -12,6 +12,8 @@ const Navbar = () => {
   const [searchData, setSearchData] = useState("");
   const [listMovies, setListMovies] = useState([]);
   const [listGenres, setListGenres] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [notFoundMessage, setNotFoundMessage] = useState("");
 
   const inputRef = useRef(null);
   const isMobile = useMediaQuery({ maxWidth: 768 });
@@ -37,35 +39,48 @@ const Navbar = () => {
       await getSearchMovie(searchData)
         .then((datas) => {
           const { data } = datas;
-          const movies = data.results.map((item) => {
-            const filteredGenre = listGenres.filter((ar) =>
-              item.genre_ids.includes(ar.id),
-            );
-            return {
-              id: item.id,
-              title: item.title,
-              release_year: item.release_date.split("-")[0],
-              poster: `${baseimgurl}${item.poster_path}`,
-              genre: filteredGenre.map((ar) => ar.name),
-            };
-          });
-          setListMovies(movies);
+          if (data.results.length > 0) {
+            const movies = data.results.map((item) => {
+              const filteredGenre = listGenres.filter((ar) =>
+                item.genre_ids.includes(ar.id),
+              );
+              return {
+                id: item.id,
+                title: item.title,
+                release_year: item.release_date.split("-")[0],
+                poster: item.poster_path
+                  ? `${baseimgurl}${item.poster_path}`
+                  : null,
+                genre: filteredGenre.map((ar) => ar.name),
+              };
+            });
+            setListMovies(movies);
+          } else {
+            setNotFoundMessage(`Movie "${searchData}" Not Found`);
+          }
         })
         .catch((error) => {
           console.log(error);
-        });
+          setIsLoading(false);
+        })
+        .finally(() => setIsLoading(false));
     };
 
     const timer = setTimeout(() => {
-      if (searchData.length >= 3) fetchMovie();
-    }, 1500);
+      setNotFoundMessage("");
+      setIsLoading(true);
+      fetchMovie();
+    }, 650);
 
     return () => clearTimeout(timer);
   }, [searchData, listGenres]);
 
   return (
     <div className="flex h-16 w-screen items-center justify-between bg-secondary p-5">
-      <div className="flex items-center gap-4">
+      <div
+        onClick={() => setSearchData("")}
+        className="flex items-center gap-4"
+      >
         <div
           onClick={() => setIsOpenSideNav((prev) => !prev)}
           className={twMerge(
@@ -114,7 +129,13 @@ const Navbar = () => {
           >
             <HiX className="hover:text-primary" />
           </div>
-          {searchData.length >= 3 && <DropDownMovie listMovies={listMovies} />}
+          {searchData.length >= 3 && (
+            <DropDownMovie
+              listMovies={listMovies}
+              isLoading={isLoading}
+              notFoundMessage={notFoundMessage}
+            />
+          )}
         </div>
       )}
       {/* END searching bar for mobile */}
@@ -150,7 +171,11 @@ const Navbar = () => {
                 />
               </div>
               {searchData.length >= 3 && (
-                <DropDownMovie listMovies={listMovies} />
+                <DropDownMovie
+                  listMovies={listMovies}
+                  isLoading={isLoading}
+                  notFoundMessage={notFoundMessage}
+                />
               )}
             </div>
             <span className="text-tertiary text-2xl font-semibold">|</span>
