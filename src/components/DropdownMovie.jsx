@@ -8,7 +8,7 @@ const DropdownMovie = ({ listMovies, isLoading, notFoundMessage }) => {
   return (
     <div
       className={twMerge(
-        "absolute left-0 right-0 top-16 rounded-md border-t-2 border-t-black border-opacity-20 bg-secondary px-2 pb-8 pt-4",
+        "absolute left-0 right-0 top-16 z-[99] rounded-md border-t-2 border-t-black border-opacity-20 bg-secondary px-2 pb-8 pt-4",
         "md:left-auto md:right-0 md:top-10 md:w-96",
         "lg:w-[45vw]",
       )}

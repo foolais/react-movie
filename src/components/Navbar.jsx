@@ -74,7 +74,7 @@ const Navbar = () => {
   }, [searchData, listGenres]);
 
   return (
-    <div className="flex h-16 w-screen items-center justify-between bg-secondary p-5">
+    <div className="flex h-[10vh] w-screen items-center justify-between bg-secondary p-5">
       <div
         onClick={() => setSearchData("")}
         className="flex items-center gap-4"
@@ -106,13 +106,13 @@ const Navbar = () => {
       </div>
       {/* searching bar for mobile */}
       {isMobile && isSearching && (
-        <div className="absolute left-0 right-0 top-0 min-h-16 transition duration-300 ease-in-out">
+        <div className="absolute left-0 right-0 top-0 min-h-[10vh] transition duration-300 ease-in-out">
           <input
             type="text"
             onChange={(e) => setSearchData(e.target.value)}
             placeholder="Search Movie Here...."
             className={twMerge(
-              "h-16 w-full bg-secondary p-3 text-white ",
+              "h-[10vh] w-full bg-secondary p-3 text-white ",
               "pr-10 placeholder:font-bold placeholder:text-tertiary focus:outline-none",
             )}
             ref={inputRef}
