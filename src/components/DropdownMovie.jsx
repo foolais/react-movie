@@ -28,13 +28,13 @@ const DropdownMovie = ({ listMovies, isLoading, notFoundMessage }) => {
             <div
               key={item.id}
               className={twMerge(
-                "border-b-tertiary flex items-start justify-start gap-4 border-b-2 py-2",
+                "flex items-start justify-start gap-4 border-b-2 border-b-tertiary py-2",
                 "hover:opacity-60 md:py-3",
               )}
             >
               <div
                 className={twMerge(
-                  "bg-tertiary flex h-28 min-w-20 items-center justify-center rounded-sm opacity-80",
+                  "flex h-28 min-w-20 items-center justify-center rounded-sm bg-tertiary opacity-80",
                   "md:h-32 md:min-w-24",
                 )}
               >
@@ -59,7 +59,7 @@ const DropdownMovie = ({ listMovies, isLoading, notFoundMessage }) => {
                 </span>
                 <span
                   className={twMerge(
-                    "text-tertiary pt-4 text-sm font-bold",
+                    "pt-4 text-sm font-bold text-tertiary",
                     "text-md",
                   )}
                 >
@@ -67,7 +67,7 @@ const DropdownMovie = ({ listMovies, isLoading, notFoundMessage }) => {
                 </span>
                 <span
                   className={twMerge(
-                    "text-tertiary text-sm font-bold",
+                    "text-sm font-bold text-tertiary",
                     "md:text-md",
                   )}
                 >

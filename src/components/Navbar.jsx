@@ -25,9 +25,8 @@ const Navbar = () => {
 
   // get list Genre movies
   useEffect(() => {
-    getGenreList().then((datas) => {
-      const { data } = datas;
-      setListGenres(data.genres);
+    getGenreList().then((response) => {
+      setListGenres(response.genres);
     });
   }, []);
 
@@ -37,10 +36,9 @@ const Navbar = () => {
 
     const fetchMovie = async () => {
       await getSearchMovie(searchData)
-        .then((datas) => {
-          const { data } = datas;
-          if (data.results.length > 0) {
-            const movies = data.results.map((item) => {
+        .then((response) => {
+          if (response.total_results !== 0) {
+            const movies = response.results.map((item) => {
               const filteredGenre = listGenres.filter((ar) =>
                 item.genre_ids.includes(ar.id),
               );
@@ -60,7 +58,7 @@ const Navbar = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log({ error });
           setIsLoading(false);
         })
         .finally(() => setIsLoading(false));
@@ -115,7 +113,7 @@ const Navbar = () => {
             placeholder="Search Movie Here...."
             className={twMerge(
               "h-16 w-full bg-secondary p-3 text-white ",
-              "placeholder:text-tertiary pr-10 placeholder:font-bold focus:outline-none",
+              "pr-10 placeholder:font-bold placeholder:text-tertiary focus:outline-none",
             )}
             ref={inputRef}
           />
@@ -160,7 +158,7 @@ const Navbar = () => {
                 onChange={(e) => setSearchData(e.target.value)}
                 className={twMerge(
                   "outline-none",
-                  "placeholder:text-tertiary pr-10 placeholder:font-semibold focus:outline-none",
+                  "pr-10 placeholder:font-semibold placeholder:text-tertiary focus:outline-none",
                 )}
                 ref={inputRef}
               />
@@ -178,7 +176,7 @@ const Navbar = () => {
                 />
               )}
             </div>
-            <span className="text-tertiary text-2xl font-semibold">|</span>
+            <span className="text-2xl font-semibold text-tertiary">|</span>
           </>
         )}
         <div className="rounded-full bg-primary p-3 text-xl font-semibold hover:opacity-80">
