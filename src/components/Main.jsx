@@ -3,37 +3,36 @@ import { getMovieList } from "../utils/api";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from "react-responsive-carousel";
 import { twMerge } from "tailwind-merge";
-import Button from "./Button";
-import { HiOutlineInformationCircle } from "react-icons/hi";
-import { truncateString } from "../utils/utils";
+import moment from "moment";
+import { HiPlay } from "react-icons/hi";
+import "../customStyle.css";
 
 const Main = () => {
   const [listMovies, setListMovies] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const baseImageUrl = import.meta.env.VITE_BASEIMGURL;
     const fetchMovie = async () =>
       await getMovieList("now_playing")
         .then((datas) => {
-          setIsLoading(true);
           const { results } = datas;
           const movies = results.map((item) => ({
             id: item.id,
             title: item.title,
             overview: item.overview,
-            release_year: item.release_date.split("-")[0],
+            release_year: moment(item.release_date).format("DD MMM YYYY"),
             backdrop: item.backdrop_path
               ? `${baseImageUrl}${item.backdrop_path}`
+              : null,
+            poster: item.poster_path
+              ? `${baseImageUrl}${item.poster_path}`
               : null,
           }));
           setListMovies(movies);
         })
         .catch((error) => {
           console.log({ error });
-          setIsLoading(false);
-        })
-        .finally(() => setIsLoading(false));
+        });
 
     fetchMovie();
   }, []);
@@ -50,7 +49,7 @@ const Main = () => {
           <div key={item.id} className="relative h-full w-full">
             <div
               className={twMerge(
-                `absolute bottom-0 left-0 right-0 top-0 z-[99] h-[105%] w-full bg-gradient-to-t from-secondary`,
+                `absolute bottom-0 left-0 right-0 top-0 z-[99] h-[105%] w-full`,
               )}
             ></div>
             <img
@@ -61,29 +60,26 @@ const Main = () => {
               )}
               alt="poster"
             />
-            <div className="absolute left-[7%] top-1/3 z-[99] w-3/4 text-left md:left-[4%] md:w-1/2">
-              <span
-                className={twMerge(
-                  "text-left font-bold text-tertiary",
-                  "text-3xl lg:text-4xl",
-                )}
-              >
-                {item.title}
-              </span>
-              <Button
-                isBgFilled={true}
-                classname="py-2 px-6 md:py-3 md:px-7 mt-5 mb-8 md:mt-8 md:mb-10"
-              >
-                <HiOutlineInformationCircle className="text-2xl md:text-3xl" />
-                <span>Hello</span>
-              </Button>
-              <div
-                className={twMerge(
-                  "text-wrap text-justify text-tertiary",
-                  "text-lg md:text-xl lg:text-3xl",
-                )}
-              >
-                {truncateString(item.overview, 100)}
+            {/* text title */}
+            <div className="black-gradient absolute -bottom-5 left-0 right-0  p-28"></div>
+            <div className="absolute bottom-0 left-0 right-0 flex gap-6">
+              <img
+                className="mb-12 ml-8 max-h-40 max-w-24 object-cover"
+                src={item.poster}
+                alt={item.title}
+              />
+              <div className="flex flex-col items-start justify-between pr-2 text-left text-tertiary">
+                <div className="mt-3 flex max-h-10 max-w-10 items-center justify-center rounded-full bg-white hover:bg-tertiary">
+                  <HiPlay className="min-h-14 min-w-14 text-primary" />
+                </div>
+                <div className="mb-14 grid">
+                  <span className="mb-2 mt-4 font-bold tracking-widest">
+                    {item.title}
+                  </span>
+                  <span className="text-lg font-semibold">
+                    {item.release_year}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

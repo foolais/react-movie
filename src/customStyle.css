@@ -1,0 +1,8 @@
+.carousel .control-dots {
+  margin: 10px 0 25px 0 !important;
+}
+
+.black-gradient {
+  background: rgb(0, 0, 0);
+  background: linear-gradient(0deg, rgba(0, 0, 0, 1) 75%, rgba(0, 0, 0, 0) 90%);
+}
